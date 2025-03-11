@@ -46,7 +46,7 @@ def bpe_tokenizer(text, desired_vocab_size, verbose = False):
     while True:
         current_tokens = set()
         for tokenized_word in vocab:
-            current_tokens.update(tokenized_word)  # tokenized_word is now a tuple
+            current_tokens.update(tokenized_word)
 
         if verbose:
             if len(current_tokens) % 100 == 0:
@@ -67,7 +67,6 @@ def bpe_tokenizer(text, desired_vocab_size, verbose = False):
     return merges, vocab, current_tokens
 
 def apply_bpe(word, merges):
-    # Start with a list of characters for the word
     tokens = list(word)
     for merge in merges:
         i = 0
@@ -80,12 +79,10 @@ def apply_bpe(word, merges):
     return tokens
 
 def bpe_tokenize(text, merges):
-    # Split text preserving whitespace
     pieces = re.split(r'(\s+)', text)
-    pieces = [p for p in pieces if p]  # remove empty tokens
+    pieces = [p for p in pieces if p]
     output = []
     for piece in pieces:
-        # If piece is purely whitespace, keep it as is.
         if piece.isspace():
             output.append(piece)
         else:
@@ -94,9 +91,8 @@ def bpe_tokenize(text, merges):
 
 if __name__ == "__main__":
     # read sys args
-
     if len(sys.argv) < 3:
-        print("Usage: python bpe_tokenizer.py <input_file> <desired_vocab_size> [verbose]")
+        print("Usage: python bpe.py <input_file> <desired_vocab_size> [verbose]")
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -116,5 +112,5 @@ if __name__ == "__main__":
     res = {"merges": merges, "vocab": vocab, "current_tokens": current_tokens}
 
     # save
-    with open(f'models/bpe_tokenizer_{input_file}_{desired_vocab_size}.pkl', 'wb') as f:
+    with open(f'models/bpe_tokenizer_{input_file[:-4]}_{desired_vocab_size}.pkl', 'wb') as f:
         pickle.dump(res, f)
