@@ -1,0 +1,5 @@
+*.pth
+/deepseek_cache
+.idea
+input.txt
+__pycache__/transformerDropout.cpython-312.pyc
