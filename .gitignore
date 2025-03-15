@@ -3,3 +3,4 @@
 .idea
 input.txt
 __pycache__/transformerDropout.cpython-312.pyc
+deepseekPrompt.py
