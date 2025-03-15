@@ -304,7 +304,7 @@ class TransformerLM(nn.Module):
         elif isinstance(module, nn.Embedding):
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
-    def forward(self, token_ids, targets=None):
+    def forward(self, token_ids, targets=None, label_smoothing = None, focal_gamma = None):
         B, T = token_ids.shape
         device = token_ids.device  # Get device from input tensor
 
@@ -319,8 +319,16 @@ class TransformerLM(nn.Module):
         logits = self.lm_head(logits)
 
         if targets is not None:
-            ce_loss = F.cross_entropy(logits.view(-1, logits.shape[-1]), targets.view(-1))
-            f_loss = focal_loss(logits.view(-1, logits.shape[-1]), targets.view(-1), gamma=0.5, alpha=1.0)
+            if label_smoothing is None:
+                ce_loss = F.cross_entropy(logits.view(-1, logits.shape[-1]), targets.view(-1))
+            else:
+                ce_loss = F.cross_entropy(logits.view(-1, logits.shape[-1]), targets.view(-1), label_smoothing = label_smoothing)
+            
+            if focal_gamma is None:
+                f_loss = focal_loss(logits.view(-1, logits.shape[-1]), targets.view(-1), gamma=0.3)
+            else:
+                f_loss = focal_loss(logits.view(-1, logits.shape[-1]), targets.view(-1), gamma=focal_gamma)
+
             return logits, ce_loss, f_loss
         else:
             # Return None for the loss values when targets is None
